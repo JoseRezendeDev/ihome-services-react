@@ -1,11 +1,6 @@
 import {
-    BrowserRouter as Router,
-    Link,
-    Switch,
-    Route
+    Link
 } from 'react-router-dom';
-import DetalhesPrestador from './DetalhesPrestador';
-import Prestador from './Prestador';
 
 const categorias = [
     {
@@ -20,34 +15,23 @@ const categorias = [
         id: 3,
         nome: 'piscineiro'
     }
-]
+];
 
 function Categoria(props) {
     return (
-        <Router>
-            <div>
-                <ul>
-                    {
-                        categorias.map(categoria => {
-                            return (
-                                <li>
-                                    <Link to={`/exibePrestador/${categoria.id}`}>{categoria.nome}</Link>
-                                </li>
-                            )
-                        })
-                    }
-                </ul>
-
-                <Switch>
-                    <Route path={`/exibePrestador/:categoriaId`}>
-                        <Prestador props={{
-                            categoriaId: categorias.id
-                        }
-                        } />
-                    </Route>
-                </Switch>
-            </div>
-        </Router>
+        <div>
+            <ul>
+                {
+                    categorias.map(categoria => {
+                        return (
+                            <li>
+                                <Link to={`/prestadores/${categoria.id}`}>{categoria.nome}</Link>
+                            </li>
+                        )
+                    })
+                }
+            </ul>
+        </div>
     );
 }
 
