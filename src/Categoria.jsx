@@ -20,6 +20,8 @@ const categorias = [
 function Categoria(props) {
     return (
         <div>
+            <h1>Categorias</h1>
+            <br />
             <ul>
                 {
                     categorias.map(categoria => {
