@@ -7,18 +7,24 @@ function Categoria(props) {
     const [categorias, setCategorias] = useState([]);
 
     useEffect(() => {
-        var myHeaders = new Headers();
-        const myInit = {
-            method: 'GET',
-            headers: myHeaders,
-            mode: 'no-cors',
-            cache: 'default'
-        };
+        const fetchCategorias = async () => {
+            const myRequest = new Request('http://localhost:80/categoria');
 
-        fetch('http://localhost:80/categoria', myInit)
-            .then(resp => resp.json())
-            .then(data => setCategorias(data))
-    });
+            fetch(myRequest)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    setCategorias(data);
+                })
+                .catch(erro => exibirErroGetCategorias(erro));
+        }
+
+        fetchCategorias();
+    }, []);
+
+    const exibirErroGetCategorias = erro => {
+        alert('Falha ao buscar categorias: ' + erro);
+    }
 
     return (
         <div>
@@ -26,9 +32,9 @@ function Categoria(props) {
             <br />
             <ul>
                 {
-                    categorias.map(categoria => {
+                    categorias && categorias.map(categoria => {
                         return (
-                            <li>
+                            <li key={categoria.id}>
                                 <Link to={`/prestadores/${categoria.id}`}>{categoria.nome}</Link>
                             </li>
                         )

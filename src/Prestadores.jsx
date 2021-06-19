@@ -1,57 +1,48 @@
 import {
     Link
 } from 'react-router-dom';
-
-
-const categorias = [
-    {
-        id: 1,
-        nome: 'pedreiro'
-    },
-    {
-        id: 2,
-        nome: 'pintor'
-    },
-    {
-        id: 3,
-        nome: 'piscineiro'
-    }
-];
-
-const prestadores = [
-    {
-        nome: "Jose",
-        cpf: "11122233344",
-        idade: 37,
-        cidade: "Sao Carlos",
-        preco_dia: 120
-    },
-    {
-        nome: "Kaleo",
-        cpf: "163473576",
-        idade: 31,
-        cidade: "Sao Carlos",
-        preco_dia: 90
-    },
-    {
-        nome: "Henrique",
-        cpf: "436817232",
-        idade: 30,
-        cidade: "Sao Carlos",
-        preco_dia: 130
-    },
-    {
-        nome: "Bruno",
-        cpf: "267547424",
-        idade: 35,
-        cidade: "Araraquara",
-        preco_dia: 120
-    }
-];
+import { useState, useEffect } from 'react';
 
 function Prestadores(props) {
+    const [categorias, setCategorias] = useState([]);
+    const [prestadores, setPrestadores] = useState([]);
+
     const categoriaId = props.match.params.categoriaId;
     const categoria = categorias.find(categoria => categoria.id === parseInt(categoriaId));
+
+    useEffect(() => {
+        const fetchCategorias = async () => {
+            const myRequest = new Request('http://localhost:80/categoria');
+
+            fetch(myRequest)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    setCategorias(data);
+                })
+                .catch(erro => exibirErroGetCategorias(erro));
+        }
+
+        const fetchPrestadoresByCategoriaId = async () => {
+            const url = 'http://localhost:80/prestador/categoria/' + categoriaId;
+            const myRequest = new Request(url);
+
+            fetch(myRequest)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    setPrestadores(data);
+                })
+                .catch(erro => exibirErroGetCategorias(erro));
+        }
+
+        fetchCategorias();
+        fetchPrestadoresByCategoriaId();
+    }, [categoriaId]);
+
+    const exibirErroGetCategorias = erro => {
+        alert('Falha ao buscar prestadores por categoria id: ' + erro);
+    }
 
     return (
         <div>
@@ -60,13 +51,13 @@ function Prestadores(props) {
             </p>
             <h1>Prestadores</h1>
             <br />
-            <h2>{categoria && categoria.nome}</h2>
+            <h2>{categoria && categorias.find(categoria => categoria.id === parseInt(categoriaId)).nome}</h2>
             <ul>
                 {
                     prestadores.map(prestador => {
                         return (
                             <div>
-                                <li>
+                                <li key={prestador.cpf}>
                                     Nome: <Link to={`/prestador/${prestador.cpf}`}>{prestador.nome}</Link>
                                     <br />
                                     CPF: {prestador.cpf}
