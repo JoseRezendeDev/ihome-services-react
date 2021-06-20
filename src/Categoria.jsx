@@ -28,14 +28,18 @@ function Categoria(props) {
 
     return (
         <div>
-            <h1>Categorias</h1>
-            <br />
+            <h2>Categorias</h2>
             <ul>
                 {
                     categorias && categorias.map(categoria => {
                         return (
                             <li key={categoria.id}>
-                                <Link to={`/prestadores/${categoria.id}`}>{categoria.nome}</Link>
+                                <Link to={{
+                                    pathname: `/prestadores/${categoria.id}`,
+                                    state: {
+                                        categorias
+                                    }
+                                }}>{categoria.nome}</Link>
                             </li>
                         )
                     })
