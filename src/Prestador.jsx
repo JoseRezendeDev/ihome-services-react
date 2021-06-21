@@ -9,6 +9,7 @@ function Prestador(props) {
     const cpf = props.match.params.cpf;
     const [prestador, setPrestador] = useState({});
     const [servicos, setServicos] = useState([]);
+    const [cliente, setCliente] = useState({});
 
     useEffect(() => {
         const urlPrestador = 'http://localhost:80/prestador/' + cpf;
@@ -32,6 +33,17 @@ function Prestador(props) {
                 setServicos(data);
             })
             .catch(erro => exibirErroGetServicos(erro));
+
+        const urlCliente = 'http://localhost:80/cliente/1';
+        const requestCliente = new Request(urlCliente);
+
+        fetch(requestCliente)
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                setCliente(data);
+            })
+            .catch(erro => exibirErroGetCliente(erro));
     }, [cpf]);
 
     const exibirErroGetPrestador = erro => {
@@ -40,6 +52,31 @@ function Prestador(props) {
 
     const exibirErroGetServicos = erro => {
         alert('Falha ao buscar servicos: ' + erro);
+    }
+
+    const exibirErroGetCliente = erro => {
+        alert('Falha ao buscar cliente: ' + erro);
+    }
+
+    const contratar = () => {
+        const body = {
+            servico: {
+                data: Date.now(),
+                preco_total: 0,
+                id_cliente: cliente.id,
+                cpf_prestador: prestador.cpf
+            }
+        }
+
+        fetch('http://localhost:80/prestador/servico', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(body)
+        })
+            .then(response => console.log(response));
     }
 
     return (
@@ -57,7 +94,7 @@ function Prestador(props) {
             <h2>{categoria.nome} {prestador.nome}</h2>
             <p>Cidade: {prestador.cidade}</p>
             <p>Preço por dia: {prestador.preco_dia}</p>
-            <button>Contratar</button>
+            <button onClick={contratar}>Contratar</button>
             <br />
             <br />
             <br />
@@ -77,7 +114,7 @@ function Prestador(props) {
                     })
                 }
             </ul>
-        </div>
+        </div >
     );
 }
 
