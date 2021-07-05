@@ -58,23 +58,28 @@ function Prestador(props) {
         alert('Falha ao buscar cliente: ' + erro);
     }
 
+    const encodeFormData = (data) => {
+        return Object.keys(data)
+            .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+            .join('&');
+    }
+
     const contratar = () => {
         const body = {
-            servico: {
-                data: Date.now(),
-                preco_total: 0,
-                id_cliente: cliente.id,
-                cpf_prestador: prestador.cpf
-            }
+            data: new Date().toISOString().slice(0, 10),
+            preco_total: 0,
+            id_cliente: cliente.id,
+            cpf_prestador: prestador.cpf
         }
+        
 
         fetch('http://localhost:80/prestador/servico', {
             method: 'POST',
             mode: 'no-cors',
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": 'application/x-www-form-urlencoded; charset=UTF-8'
             },
-            body: JSON.stringify(body)
+            body: encodeFormData(body)
         })
             .then(response => console.log(response));
     }
