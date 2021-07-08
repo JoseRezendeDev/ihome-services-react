@@ -10,6 +10,7 @@ function Prestador(props) {
     const [prestador, setPrestador] = useState({});
     const [servicos, setServicos] = useState([]);
     const [cliente, setCliente] = useState({});
+    const [shouldUpdateServicos, setShouldUpdateServicos] = useState(0);
 
     useEffect(() => {
         const urlPrestador = 'http://localhost:80/prestador/' + cpf;
@@ -44,7 +45,7 @@ function Prestador(props) {
                 setCliente(data);
             })
             .catch(erro => exibirErroGetCliente(erro));
-    }, [cpf]);
+    }, [cpf, shouldUpdateServicos]);
 
     const exibirErroGetPrestador = erro => {
         alert('Falha ao buscar prestador: ' + erro);
@@ -58,6 +59,10 @@ function Prestador(props) {
         alert('Falha ao buscar cliente: ' + erro);
     }
 
+    const exibirErroContratarPrestador = erro => {
+        alert('Falha ao contratar prestador: ' + erro);
+    }
+
     const encodeFormData = (data) => {
         return Object.keys(data)
             .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
@@ -67,11 +72,10 @@ function Prestador(props) {
     const contratar = () => {
         const body = {
             data: new Date().toISOString().slice(0, 10),
-            preco_total: 0,
+            preco_total: prestador.preco_dia || 0,
             id_cliente: cliente.id,
             cpf_prestador: prestador.cpf
         }
-        
 
         fetch('http://localhost:80/prestador/servico', {
             method: 'POST',
@@ -81,7 +85,8 @@ function Prestador(props) {
             },
             body: encodeFormData(body)
         })
-            .then(response => console.log(response));
+            .then(setShouldUpdateServicos(shouldUpdateServicos + 1))
+            .catch(erro => exibirErroContratarPrestador(erro));
     }
 
     return (
@@ -109,11 +114,13 @@ function Prestador(props) {
                     servicos && servicos.map(servico => {
                         return (
                             <li key={servico.id}>
-                                <p>Data: {servico.data.substr(0, 10)}</p>
-                                <p>Preço total: {servico.preco_total}</p>
-                                <p>Nota: {servico.nota}</p>
-                                <p>Comentário: {servico.comentario}</p>
+                                <p>Data: {servico.data.substr(0, 10)}
                                 <br />
+                                Preço total: {servico.preco_total}
+                                <br />
+                                Nota: {servico.nota}
+                                <br />
+                                Comentário: {servico.comentario}</p>
                             </li>
                         )
                     })
