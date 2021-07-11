@@ -71,6 +71,7 @@ function Prestador(props) {
 
     const contratar = () => {
         const body = {
+            id: null,
             data: new Date().toISOString().slice(0, 10),
             preco_total: prestador.preco_dia || 0,
             id_cliente: cliente.id,
